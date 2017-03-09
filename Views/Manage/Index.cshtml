@@ -1,0 +1,81 @@
+﻿@model GeekWear.Models.ManageIndexViewModel
+@{
+    ViewBag.Title = "Manage";
+}
+
+<h2>@ViewBag.Title.</h2>
+
+<p class="text-success">@ViewBag.StatusMessage</p>
+<div>
+    <h4>Change your account settings</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>Password:</dt>
+        <dd>
+            [
+            @if (Model.HasPassword)
+            {
+                @Html.ActionLink("Change your password", "ChangePassword")
+}
+            else
+            {
+                @Html.ActionLink("Create", "SetPassword")
+}
+            ]
+        </dd>
+    </dl>
+    @if(Model.Orders != null && Model.Orders.Any())
+    {
+    <div class="orders">
+        <h3>Your Orders</h3>
+        @foreach (var order in Model.Orders)
+        {
+            <div class="row line">
+                <div class="col-sm-3">
+                    @if (order.OrderDate.HasValue)
+                    {
+                        <text>@string.Format("{0:MM/dd/yyyy}", @order.OrderDate.Value)</text>
+                    }
+                    else
+                    {
+                        <text>-</text>
+                    }
+                </div>
+                <div class="col-sm-2 text-center">
+                    @switch (order.Status)
+                    {
+                        case GeekWear.Models.OrderStatus.Canceled:
+                            <span class="glyphicon glyphicon-remove text-danger"></span>break;
+                        case GeekWear.Models.OrderStatus.Fail:
+                            <span class="glyphicon glyphicon-remove text-danger"></span>break;
+                        case GeekWear.Models.OrderStatus.Success:
+                            <span class="glyphicon glyphicon-ok text-success"></span>break;
+                        case GeekWear.Models.OrderStatus.UnCompleted:
+                            <span class="glyphicon glyphicon-time text-warning"></span>break;
+                    }
+                </div>
+                <div class="col-sm-2 text-center">
+                    @if (order.TotalCost.HasValue)
+                    {
+                        <text>@string.Format("${0:#.00}", order.TotalCost)</text>
+                    }
+                    else
+                    {
+                        <text>-</text>
+                    }
+                </div>
+                <div class="col-sm-5 shirts">
+                    @foreach (var shirt in order.Projects)
+                    {
+                        <span class="shirt"><img src="/img/@shirt.ShirtColor.ToLower()_T_shirt.svg" /> @shirt.SizeString</span>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+    }
+</div>
+@section scripts{
+    @*@Scripts.Render("~/bundles/textEncoders")
+        @Scripts.Render("~/bundles/app")*@
+}

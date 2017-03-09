@@ -1,0 +1,71 @@
+﻿@model GeekWear.Models.PaymentCartViewModel
+@{
+    ViewBag.Title = "Cart";
+}
+
+<h2>Cart</h2>
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">
+        @Model.ErrorMessage
+    </div>
+}
+
+@using (Html.BeginForm("Index", "Cart", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    if (Model.Cart != null)
+    {
+        var itemCost = 50;
+        var shipping = 0;
+        var total = Model.Cart.Items.Sum(x => x.Count * itemCost) + shipping;
+
+        <div class="header hidden-xs row">
+            <strong class="col-sm-6 col-md-10">Shirt</strong>
+            <strong class="col-sm-3 col-md-1 text-right">Count</strong>
+            <strong class="col-sm-3 col-md-1 text-right">Price</strong>
+        </div>
+        <hr />
+        <ul id="cart" class="row">
+            @foreach (var shirt in Model.Cart.Items)
+            {
+                <li class="cart-line clearfix">
+                    <div class="col-sm-6 col-md-10 col-xs-12">
+                        <div class="row">
+                            <strong class="col-xs-3 visible-xs">Shirt:</strong>
+                            <span class="col-xs-4 col-sm-4 col-md-1"><span class="@shirt.Project.ShirtColor project-color"></span></span>
+                            <span class="col-xs-5 col-sm-8 col-md-1 project-text">@shirt.Project.Size</span>
+                            <label class="col-xs-3 visible-xs">Text: </label>
+                            <span class="col-xs-9 col-md-10 project-text"> @shirt.Project.TextInput</span>
+                        </div>
+                    </div>
+                    <div class="visible-xs col-xs-12"><hr /></div>
+                    <strong class="col-xs-6 col-sm-3 col-md-1 project-text text-right"><span class="visible-xs-inline-block">Count: </span> <text>x</text>@shirt.Count</strong>
+                    <strong class="col-xs-6 col-sm-3 col-md-1 project-text text-right">
+                        <span class="visible-xs-inline-block">Price: </span>
+                        @{  var cost = shirt.Count * itemCost; }
+                        @string.Format("${0:#.00}", cost)
+                    </strong>
+                </li>}
+        </ul>
+        <hr />
+        <div class="footer row">
+            <strong class="col-sm-10">Shipping Cost</strong>
+            <strong class="col-sm-2 text-right">@string.Format("${0:#.00}", shipping)</strong>
+            <strong class="col-sm-10">Total</strong>
+            <strong class="col-sm-2 text-right">
+                @string.Format("${0:#.00}", total)
+            </strong>
+        </div>        }
+
+        <div class="footer row">
+            <div class="col-sm-12">
+                <hr />
+                @Html.ActionLink("Add new Shirt", "Index", "Home", null, new { @class = "btn btn-default" })
+                @if (Model.Cart != null && Model.Cart.Items != null && Model.Cart.Items.Any())
+                {
+                    <button class="btn btn-primary pull-right" type="submit">Buy Now</button>
+}
+            </div>
+        </div>}
